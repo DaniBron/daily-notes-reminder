@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2E86C1;
+            font-size: 24px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #D5D8DC;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background-color: #5DADE2;
+            /* Background color for the code block */
+            padding: 10px;
+            /* Adjust padding as needed */
+            border-radius: 4px;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+        }
+
+        .code {
+            font-size: 15px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            /* Increased padding for more space inside the list items */
+            margin-bottom: 15px;
+            /* Increased margin for more space between the list items */
+            border-left: 4px solid #5DADE2;
+            border-radius: 4px;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        ul li::before {
+            content: '• ';
+            color: #2E86C1;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        footer {
+            text-align: center;
+            color: #95A5A6;
+            font-size: 0.8em;
+            margin-top: 20px;
+        }
+
+        .signature {
+            color: #2E86C1;
+            font-weight: bold;
+        }
+
+        /* Responsive styles */
+        @media only screen and (max-width: 520px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            li {
+                padding: 15px 20px;
+                /* Increased padding for more space inside the list items */
+                margin-top: 15px;
+            }
+
+            ul li {
+                padding: 15px 20px;
+                /* Increased padding for more space inside the list items */
+                margin-top: 30px;
+                /* Increased margin for more space between the list items */
+            }
+
+            footer {
+                font-size: 14px;
+                /* Adjust footer font size if necessary */
+            }
+
+            .code-block {
+                font-size: 18px;
+            }
+
+            .code {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Daily Coding Notification</h1>
+        <div class="code-block">{{header}}</div>
+        <div id="email-content" class="code">{{content}}</div>
+        <!-- Add the rest of the content following the pattern above -->
+        <footer>
+            Sent with <span class="signature">♥</span> by Danny Bronshtein
+        </footer>
+    </div>
+</body>
+
+</html>
