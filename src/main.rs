@@ -10,18 +10,29 @@ use daily_notes_reminder::common::email_factory::email_factory;
 use daily_notes_reminder::common::subject_generator_factory::subject_gen_factory;
 use daily_notes_reminder::common::subject_generator::SubjectGenerator;
 
+use daily_notes_reminder::s3_manager::S3Manager;
 
-fn main() {
-    if let Err(e) = run(){
+const FILE: &str = "coding_notes.txt";
+
+#[tokio::main]
+async fn main() {
+    if let Err(e) = run().await{
         eprintln!("Application error: {}", e);
     }
 }
 
-fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let file_path:  &str = "coding_notes.txt";
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Starting");
 
-    let topics:HashMap<String, Vec<String>> = match topics_gen_factory(file_path) {
-        Some(factory) => factory.generate_topics(file_path)?,
+    let s3_manager = S3Manager::new();
+
+    let _ = match s3_manager.download_file(FILE).await {
+        Ok(_) => println!("File downloaded"),
+        Err(e) => eprintln!("Error: {}", e),
+    };
+
+    let topics:HashMap<String, Vec<String>> = match topics_gen_factory(FILE) {
+        Some(factory) => factory.generate_topics(FILE)?,
         None => return Err("Unsupported file type".into()),
     };
 
