@@ -12,13 +12,20 @@ use daily_notes_reminder::common::subject_generator::SubjectGenerator;
 
 use daily_notes_reminder::s3_manager::S3Manager;
 
+use lambda_runtime::{service_fn, LambdaEvent, Error};
+use serde_json::{json, Value};
+
 const FILE: &str = "coding_notes.txt";
+const FILE_PATH: &str = "/tmp/coding_notes.txt";
 
 #[tokio::main]
-async fn main() {
-    if let Err(e) = run().await{
-        eprintln!("Application error: {}", e);
-    }
+async fn main() -> Result<(), Error> {
+    lambda_runtime::run(service_fn(lambda_handler)).await
+   }
+
+async fn lambda_handler(event: LambdaEvent<Value>) -> Result<String, Error> {
+    run().await.map_err(|e| Error::from(e.to_string()))?;
+    Ok("Execution completed".to_string())
 }
 
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -31,8 +38,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         Err(e) => eprintln!("Error: {}", e),
     };
 
-    let topics:HashMap<String, Vec<String>> = match topics_gen_factory(FILE) {
-        Some(factory) => factory.generate_topics(FILE)?,
+    let topics:HashMap<String, Vec<String>> = match topics_gen_factory(FILE_PATH) {
+        Some(factory) => factory.generate_topics(FILE_PATH)?,
         None => return Err("Unsupported file type".into()),
     };
 
