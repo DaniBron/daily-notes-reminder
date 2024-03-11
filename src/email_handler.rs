@@ -1,5 +1,5 @@
 //use tokio::task;
-use dotenv::dotenv;
+//use dotenv::dotenv;
 use lettre::message::{header, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
@@ -41,7 +41,8 @@ impl Email for EmailHandler {
 
 impl EmailHandler {
     pub fn new() -> Self {
-        dotenv().ok().expect(".env file can't be found!");
+        //dotenv().ok().expect(".env file can't be found!");
+
         // Read SMTP configuration from environment variables
         let smtp_server = env::var("SMTP_SERVER").expect("SMTP_SERVER not set in .env");
         let smtp_username = env::var("SMTP_USERNAME").expect("SMTP_USERNAME not set in .env");
@@ -66,7 +67,6 @@ impl EmailHandler {
     }
 
     fn emailes_to_send(&self, subject: &str, text: String) -> HashMap<String, Message> {
-
         let mut emailes: HashMap<String, Message> = HashMap::new();
 
         for costumer in &self.recipient_emails {
