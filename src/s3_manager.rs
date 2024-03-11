@@ -1,6 +1,9 @@
 use std::io::BufWriter;
 use std::{fs::File, io::Write};
 
+use std::fs;
+use std::path::Path;
+
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::{primitives::ByteStream, Client};
 use aws_types::SdkConfig;
@@ -46,7 +49,15 @@ impl S3Manager {
     }
 
     async fn save_file(&self, data: &mut ByteStream, key: &str) -> Result<(), Box<dyn std::error::Error>> {
-        let file: File = File::create(key)?;
+        let path = Path::new("/tmp").join(key);
+
+        // Create the directories in the path
+        if let Some(dir) = path.parent() {
+            fs::create_dir_all(dir)?;
+        }
+
+        // Create the file
+        let file: File = File::create(&path)?;
 
         let mut buf_writer = BufWriter::new(file);
 
