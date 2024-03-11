@@ -46,7 +46,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let email_handler = email_factory();
     let email_content = subject_gen_factory();
 
-    let _ = send_email(&topics, &email_handler, &email_content);
+    let _ = send_email(&topics, &email_handler, &email_content)?;
 
     Ok(())
 }
