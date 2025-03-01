@@ -1,59 +1,75 @@
 use rand::Rng;
-use std::collections::HashMap;
+use crate::common::topics_generator::Topics;
+use crate::common::topics_generator::BulletNode;
 use std::error::Error;
-
 use crate::common::subject_generator::SubjectGenerator;
 
 pub struct RandomSubjectGenerator {}
 
 impl SubjectGenerator for RandomSubjectGenerator {
-
-    fn generate_subject(&self, topics: &HashMap<String, Vec<String>>) -> Result<String, Box<dyn Error>> {
-        //let mut topics = HashMap::new();
-      
-        Ok(self.generate_html_str(&topics))
+    fn generate_subject(&self, topics: &Topics) -> Result<String, Box<dyn Error>> {
+        Ok(self.generate_html_str(topics))
     }
-
 }
 
 impl RandomSubjectGenerator {
-
     pub fn new() -> RandomSubjectGenerator {
         RandomSubjectGenerator {}
     }
 
-    fn get_random_topic<'a>(&'a self, topics: &'a HashMap<String, Vec<String>>) -> (&String, &Vec<String>) {
+    fn get_random_topic<'a>(&'a self, topics: &'a Topics) -> Option<&BulletNode>{
+        if topics.is_empty() {
+            return None;
+        }
+
         let mut rng = rand::thread_rng();
-
-        let random_topic = rng.gen_range(0..topics.len());
-
-        let topics_keys: Vec<_> = topics.iter().collect();
-
-        return topics_keys[random_topic];
+        let random_topic = rng.gen_range(0..topics.root_nodes.len());
+        let topic: &BulletNode = &topics.root_nodes[random_topic]; //topics.iter().collect();
+        
+        Some(topic)
     }
 
-    fn generate_html_str(&self, topics: &HashMap<String, Vec<String>>) -> String {
+    fn generate_html_str(&self, topics: &Topics) -> String {
         let mut email_html: String = include_str!("styles/style.html").to_string();
 
-        let (topic, bullet_points) = self.get_random_topic(&topics);
+        // Get a random topic
+        if let Some(topic) = self.get_random_topic(&topics) {
+            // Set the header from the topic content
+            email_html = email_html.replace("{{header}}", &topic.content);
 
-        email_html = email_html.replace("{{header}}", topic);
-
-        let text: String = bullet_points
-            .into_iter()
-            .map(|paragraph| {
-                let trimmed_paragraph = paragraph.trim();
-                if trimmed_paragraph.is_empty() {
-                    String::new()
-                } else {
-                    format!("<li>{}</li>\n", trimmed_paragraph) // Each paragraph becomes a list item
+            // Generate HTML for children nodes
+            let mut content = String::new();
+            
+            // Process level 1 nodes (main bullet points)
+            for child in &topic.children {
+                if child.level == 1 {
+                    content.push_str("<li>");
+                    content.push_str(&child.content);
+                    
+                    // Check for level 2 children (sub-bullets)
+                    let sub_bullets: Vec<&BulletNode> = child.children
+                        .iter()
+                        .filter(|node| node.level == 2)
+                        .collect();
+                    
+                    if !sub_bullets.is_empty() {
+                        content.push_str("<ul>");
+                        for sub_bullet in sub_bullets {
+                            content.push_str(&format!("<li>{}</li>", sub_bullet.content));
+                        }
+                        content.push_str("</ul>");
+                    }
+                    
+                    content.push_str("</li>\n");
                 }
-            })
-            .collect();
+            }
 
-        email_html = email_html.replace("{{content}}", &text);
+            email_html = email_html.replace("{{content}}", &content);
+        } else {
+            email_html = email_html.replace("{{header}}", "No Topics Available");
+            email_html = email_html.replace("{{content}}", "<p>No content to display.</p>");
+        }
 
-        return email_html;
+        email_html
     }
-    
 }

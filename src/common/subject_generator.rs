@@ -1,5 +1,5 @@
-use std::collections::HashMap;
+use crate::common::topics_generator::Topics;
 
 pub trait SubjectGenerator {
-    fn generate_subject(&self, topics: &HashMap<String, Vec<String>>) -> Result<String, Box<dyn std::error::Error>>;
+    fn generate_subject(&self, topics: &Topics) -> Result<String, Box<dyn std::error::Error>>;
 }

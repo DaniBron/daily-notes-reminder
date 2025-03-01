@@ -1,5 +1,5 @@
 # Use an official Rust runtime as a parent image
-FROM rust:1.76.0-slim-buster as builder
+FROM rust:1.85-slim AS builder
 
 # Set the working directory in the container to /app
 WORKDIR /app
@@ -21,10 +21,10 @@ RUN rm ./target/release/deps/daily_notes_reminder*
 RUN cargo build --release
 
 # Our second stage, that only gets the built binary
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 
 # Install OpenSSL and ca-certificates
-RUN apt-get update && apt-get install -y libssl1.1 ca-certificates
+RUN apt-get update && apt-get install -y openssl ca-certificates
 
 # copy the build artifact from the build stage
 COPY --from=builder /app/target/release/daily_notes_reminder /usr/local/bin

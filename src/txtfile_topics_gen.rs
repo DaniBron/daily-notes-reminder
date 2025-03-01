@@ -1,24 +1,21 @@
 use crate::common;
 
 use common::topics_generator::TopicsGenerator;
+use common::topics_generator::Topics;
+use common::topics_generator::BulletNode;
 
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-
-
-
-
 pub struct TxtFileTopicsGenerator;
 
 impl TopicsGenerator for TxtFileTopicsGenerator 
 {
-    fn generate_topics(&self, file_path: &str) -> Result<HashMap<String, Vec<String>>, Box<dyn std::error::Error>>
+    fn generate_topics(&self, file_path: &str) -> Result<Topics, Box<dyn std::error::Error>>
     {
         // Attempt to open the Word document
         let doc = File::open(file_path)?;
 
-        let mut topics: HashMap<String, Vec<String>> = HashMap::new();
+        let mut topics: Topics = Topics::new();
 
         self.arrange_text_to_topics(&doc, &mut topics);
 
@@ -37,9 +34,8 @@ impl TxtFileTopicsGenerator
         TxtFileTopicsGenerator { }
     }
 
-
-    fn arrange_text_to_topics(&self, text_file: &File, topics: &mut HashMap<String, Vec<String>>) {
-
+    fn arrange_text_to_topics(&self, text_file: &File, topics: &mut Topics) {
+        
         let reader = BufReader::new(text_file);
 
         let mut current_topic = String::new();
@@ -49,27 +45,42 @@ impl TxtFileTopicsGenerator
                 Ok(line) => line,
                 Err(e) => {
                     println!("Error reading line: {}", e.to_string());
-                    "".to_string()  // Return an empty string
+                    continue;
                 }
             };
 
             if line.starts_with("- ") {
-                // New topic starts here
+                // New topic
                 current_topic = line[2..].trim().to_string();
-                topics.entry(current_topic.clone()).or_insert_with(Vec::new);
-
-                //println!("New topic: {}", current_topic);
+                topics.add(BulletNode {
+                    content: current_topic.clone(),
+                    children: Vec::new(),
+                    level: 0,
+                });
             } 
-            
             else if line.starts_with("o ") {
-                // Bullet point for the current topic
-                if let Some(bullets) = topics.get_mut(&current_topic) {
-                    bullets.push(line[2..].trim().to_string());
+                // Bullet point under the current topic
+                let last_bullet = BulletNode {
+                    content: line[2..].trim().to_string(),
+                    children: Vec::new(),
+                    level: 1,
+                };
 
-                    //println!("New bullet point: {}", line[2..].trim());
-                }
-            }
+                let last_topic = topics.root_nodes.last_mut().unwrap();
+
+                last_topic.children.push(last_bullet);
+            } 
+            else if line.starts_with("* ") {
+                // Sub-bullet under the last bullet
+                let sub_bullet = BulletNode {
+                    content: line[2..].trim().to_string(),
+                    children: Vec::new(),
+                    level: 2,
+                };
+
+                let last_bullet = topics.last_child().unwrap();
+                
+                last_bullet.children.push(sub_bullet);}
         }
     }
-
 }

@@ -1,8 +1,9 @@
-use std::collections::HashMap;
+use std::env;
 
 use daily_notes_reminder::common::email::Email;
 
 use daily_notes_reminder::common::topics_generator::TopicsGenerator;
+use daily_notes_reminder::common::topics_generator::Topics;
 use daily_notes_reminder::common::topics_generator_factory::topics_gen_factory;
 
 use daily_notes_reminder::common::email_factory::email_factory;
@@ -13,7 +14,7 @@ use daily_notes_reminder::common::subject_generator::SubjectGenerator;
 use daily_notes_reminder::s3_manager::S3Manager;
 
 use lambda_runtime::{service_fn, LambdaEvent, Error};
-use serde_json::{json, Value};
+use serde_json::Value;
 
 const FILE: &str = "coding_notes.txt";
 const FILE_PATH: &str = "/tmp/coding_notes.txt";
@@ -38,7 +39,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         Err(e) => eprintln!("Error: {}", e),
     };
 
-    let topics:HashMap<String, Vec<String>> = match topics_gen_factory(FILE_PATH) {
+    let topics = match topics_gen_factory(FILE_PATH) {
         Some(factory) => factory.generate_topics(FILE_PATH)?,
         None => return Err("Unsupported file type".into()),
     };
@@ -51,7 +52,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn send_email(topics: &HashMap<String, Vec<String>>, email_handler: &impl Email, subject_generator: &impl SubjectGenerator) -> Result<(), Box<dyn std::error::Error>> {
+fn send_email(topics: &Topics, email_handler: &impl Email, subject_generator: &impl SubjectGenerator) -> Result<(), Box<dyn std::error::Error>> {
     
     let subject:    &str = "Daily Code Principles";
     
