@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Modern color scheme */
         :root {
-            --primary-color: #2563eb;
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
             --secondary-color: #1e40af;
             --background-color: #f8fafc;
+            --card-bg: #ffffff;
             --text-color: #1e293b;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            --muted-color: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -30,34 +35,87 @@
             max-width: 800px;
             margin: 20px auto;
             background-color: white;
-            padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 4px 6px var(--shadow-color);
+            overflow: hidden;
         }
 
-        h1 {
-            color: var(--primary-color);
-            font-size: 1.875rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .code-block {
-            background-color: var(--primary-color);
+        /* Header */
+        .header {
+            padding: 24px 32px;
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            font-size: 1.125rem;
-            font-weight: 500;
-            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            border-bottom: none;
+            text-align: left;
+            color: white;
+            padding-bottom: 0;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code container */
+        .code-container {
+            background-color: #1e1e2e;
+            color: #ffffff;
+            margin: 24px 32px;
+            padding: 20px;
+            border-radius: 12px;
+            position: relative;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .window-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .button-red {
+            background-color: #ff5f56;
+            opacity: 0.8;
+        }
+        
+        .button-yellow {
+            background-color: #ffbd2e;
+            opacity: 0.8;
+        }
+        
+        .button-green {
+            background-color: #27c93f;
+            opacity: 0.8;
+        }
+        
+        .code-block {
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            background-color: transparent;
+            color: white;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
         }
 
         .code {
-            font-size: 1rem;
+            font-size: 14px;
             line-height: 1.75;
         }
 
@@ -118,18 +176,23 @@
         @media screen and (max-width: 640px) {
             .container {
                 margin: 0;
-                padding: 1.5rem;
                 border-radius: 0;
             }
+            
+            .header {
+                padding: 16px 20px;
+            }
 
-            h1 {
-                font-size: 1.5rem;
+            .code-container {
+                margin: 16px 20px;
+                padding: 16px;
             }
 
             .code-block {
                 padding: 0.875rem 1.25rem;
                 font-size: 1rem;
             }
+
 
             li {
                 margin-bottom: 1.5rem;
@@ -173,11 +236,26 @@
 
 <body>
     <div class="container">
-        <h1>Daily Coding Notification</h1>
-        <div class="code-block">{{header}}</div>
-        <div id="email-content" class="code">{{content}}</div>
+        <div class="header">
+            <h1>Daily Code Broadcast</h1>
+            <p>Your daily dose of programming wisdom</p>
+        </div>
+        
+        <div class="code-container">
+            <div class="window-buttons">
+                <span class="window-button button-red"></span>
+                <span class="window-button button-yellow"></span>
+                <span class="window-button button-green"></span>
+            </div>
+            <pre class="code-block">{{header}}</pre>
+        </div>
+        
+        <div class="content">
+            {{content}}
+        </div>
+        
         <footer>
-            Sent with <span class="signature">♥</span> by Danny Bronshtein
+            Sent with <span class="heart">♥</span> by <span class="signature">Danny Bronshtein</span>
         </footer>
     </div>
 </body>
