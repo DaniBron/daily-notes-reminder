@@ -3,233 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Modern color scheme */
-        :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #1e40af;
-            --background-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --muted-color: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-color: rgba(0, 0, 0, 0.06);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+    <style type="text/css">
+        /* CSS Reset & Email Body Defaults */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            background-color: #f4f4f4; /* A light background for the email client window */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            color: #333333;
         }
 
+        /* Main Container */
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px var(--shadow-color);
-            overflow: hidden;
+            width: 100%;
+            max-width: 600px; /* Common width for email content */
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px; /* Slightly rounded corners for a modern touch */
+            overflow: hidden; /* Ensures child elements respect the border-radius */
+            border: 1px solid #dddddd; /* Subtle border */
         }
 
         /* Header */
         .header {
-            padding: 24px 32px;
-            background: linear-gradient(to right, #6366f1, #8b5cf6);
-            color: white;
+            background-color: #2c3e50; /* A deep, modern blue/grey */
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
         }
-
         .header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            border-bottom: none;
-            text-align: left;
-            color: white;
-            padding-bottom: 0;
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.2;
         }
-
         .header p {
-            font-size: 13px;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.4;
             opacity: 0.9;
         }
 
-        /* Code container */
+        /* Code Container - Styled like a Terminal/Editor Window */
         .code-container {
-            background-color: #1e1e2e;
-            color: #ffffff;
-            margin: 24px 32px;
-            padding: 20px;
-            border-radius: 12px;
-            position: relative;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background-color: #1e1e1e; /* Dark background for the code block */
+            margin: 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
         }
 
         .window-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
+            background-color: #333333; /* Slightly lighter bar for buttons */
+            padding: 8px 12px;
+            display: block; /* Make it a block to contain floats */
+            text-align: left; /* Align buttons to the left */
         }
-        
+        .window-buttons::after { /* Clearfix for floated spans */
+            content: "";
+            clear: both;
+            display: table;
+        }
         .window-button {
+            display: inline-block; /* Changed from float for better control in some clients */
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            display: inline-block;
+            margin-right: 6px;
+            vertical-align: middle;
         }
-        
-        .button-red {
-            background-color: #ff5f56;
-            opacity: 0.8;
-        }
-        
-        .button-yellow {
-            background-color: #ffbd2e;
-            opacity: 0.8;
-        }
-        
-        .button-green {
-            background-color: #27c93f;
-            opacity: 0.8;
-        }
-        
+        .button-red { background-color: #ff5f57; }
+        .button-yellow { background-color: #ffbd2e; }
+        .button-green { background-color: #28c940; }
+
         .code-block {
-            font-size: 14px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            background-color: transparent;
-            color: white;
-            padding: 0;
+            font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #d4d4d4; /* Light text color for dark background */
+            padding: 15px 20px;
             margin: 0;
-            box-shadow: none;
+            overflow-x: auto; /* Allows horizontal scrolling for long code lines */
+            white-space: pre-wrap; /* Preserves whitespace and wraps lines */
+            word-wrap: break-word; /* Breaks long words to prevent overflow */
+            background-color: #1e1e1e; /* Ensure pre has the same dark background */
         }
 
-        .code {
-            font-size: 14px;
-            line-height: 1.75;
+        /* Content Area */
+        .content {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333333;
+        }
+        .content p {
+            margin: 0 0 15px 0;
+        }
+        .content p:last-child { /* Remove bottom margin from last paragraph if it's the last child of .content */
+            margin-bottom: 0;
+        }
+        .content a {
+            color: #3498db; /* A modern blue for links */
+            text-decoration: underline;
         }
 
-        ul {
-            list-style: none;
-            margin: 1.5rem 0;
+        /* Styling for lists within the content area */
+        .content ul,
+        .content ol {
+            padding-left: 25px; /* Indentation for lists */
+            margin-top: 0; /* Remove default top margin */
+            margin-bottom: 15px; /* Space after the entire list */
         }
 
-        ul li {
-            background-color: white;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--primary-color);
-            border-radius: 6px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .content li {
+            margin-bottom: 10px; /* Adds space BELOW each bullet point */
         }
 
-        ul li:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px var(--shadow-color);
+        /* Remove bottom margin from the last list item within any list in .content */
+        .content ul li:last-child,
+        .content ol li:last-child {
+            margin-bottom: 0;
         }
 
-        ul li::before {
-            content: '•';
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-right: 0.75rem;
-        }
 
-        /* Nested lists */
-        ul ul {
-            margin: 0.75rem 0 0.75rem 1.5rem;
-        }
-
-        ul ul li {
-            border-left: 3px solid var(--secondary-color);
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            background-color: #f8fafc;
-        }
-
+        /* Footer */
         footer {
             text-align: center;
-            color: #64748b;
-            font-size: 0.875rem;
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e2e8f0;
+            padding: 20px;
+            font-size: 12px;
+            color: #777777;
+            border-top: 1px solid #eeeeee;
         }
-
+        .heart {
+            color: #e74c3c; /* Red heart */
+            font-size: 14px; /* Slightly larger heart */
+        }
         .signature {
-            color: var(--primary-color);
-            font-weight: 600;
+            font-weight: bold;
+            color: #555555;
         }
 
-        /* Responsive Design */
-        @media screen and (max-width: 640px) {
+        /* --- Mobile First Responsive Styles --- */
+        @media screen and (max-width: 600px) {
             .container {
-                margin: 0;
-                border-radius: 0;
+                width: 100% !important;
+                border-radius: 0 !important; /* Full width on small screens */
+                border-left: none !important;
+                border-right: none !important;
             }
-            
             .header {
-                padding: 16px 20px;
+                padding: 25px 15px;
             }
-
+            .header h1 {
+                font-size: 25px;
+            }
+            .header p {
+                font-size: 15px;
+            }
             .code-container {
-                margin: 16px 20px;
-                padding: 16px;
+                margin: 15px;
             }
-
             .code-block {
-                padding: 0.875rem 1.25rem;
-                font-size: 1rem;
+                font-size: 12px; /* Slightly smaller code font on mobile */
+                padding: 12px 15px;
             }
-
-
-            li {
-                margin-bottom: 1.5rem;
+            .content {
+                padding: 15px;
+                font-size: 15px;
             }
-
-            /* ul li {
-                padding: 0.875rem 1rem;
-            } */
-
-            ul ul {
-                margin-left: 1rem;
+            .content ul,
+            .content ol {
+                padding-left: 25px; /* Slightly less indentation on mobile */
+                margin-bottom: 15px;
+            }
+            .content li {
+                margin-bottom: 10px; /* Slightly less space between bullets on mobile */
+            }
+            footer {
+                padding: 15px;
+                font-size: 11px;
             }
         }
 
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --background-color: #0f172a;
-                --text-color: #e2e8f0;
-                --shadow-color: rgba(0, 0, 0, 0.3);
-            }
+        /* --- Outlook Specific Fixes (if needed, keep minimal) --- */
+        /* Example: Force Outlook to use a specific width.
+        Outlook doesn't always respect max-width on divs.
+        You might wrap your .container in a conditional table:
+        ... your .container div ...
+        */
 
-            body {
-                background-color: var(--background-color);
-            }
+        /* Ensure text links are not blue in Gmail if you set a different color */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
 
-            .container {
-                background-color: #1e293b;
-            }
-
-            ul li {
-                background-color: #1e293b;
-            }
-
-            ul ul li {
-                background-color: #0f172a;
-            }
         }
     </style>
 </head>
