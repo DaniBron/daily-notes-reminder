@@ -3,237 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style type="text/css">
-        /* CSS Reset & Email Body Defaults */
-        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    <title>{{post_title}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db; /* Blue */
+            --secondary-color: #2ecc71; /* Green */
+            --accent-color: #e74c3c; /* Red */
+            --background-light: #ecf0f1; /* Light grey */
+            --text-dark: #2c3e50; /* Dark blue-grey */
+            --text-medium: #7f8c8d; /* Medium grey */
+            --border-color: #bdc3c7; /* Lighter grey */
+            --card-background: #ffffff; /* White */
+        }
+
         body {
-            height: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            background-color: #f4f4f4; /* A light background for the email client window */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            color: #333333;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background-color: var(--background-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center; /* Center content horizontally */
+            align-items: flex-start; /* Align content to the top vertically */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
 
-        /* Main Container */
-        .container {
-            width: 100%;
-            max-width: 600px; /* Common width for email content */
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px; /* Slightly rounded corners for a modern touch */
-            overflow: hidden; /* Ensures child elements respect the border-radius */
-            border: 1px solid #dddddd; /* Subtle border */
+        .post-container {
+            max-width: 800px;
+            width: 100%; /* Ensure it takes full width up to max-width */
+            background-color: var(--card-background);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
 
-        /* Header */
-        .header {
-            background-color: #2c3e50; /* A deep, modern blue/grey */
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            font-weight: 700;
+            text-align: center; /* Center the main title */
+        }
+
+        h2 {
+            color: var(--text-dark);
+            font-size: 1.8em;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5em;
+            font-weight: 600;
+        }
+
+        h3 { /* For sub-section titles like "Key Features" */
+            color: var(--secondary-color);
+            font-size: 1.3em;
+            margin-top: 1.5em;
+            margin-bottom: 0.6em;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1em;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 1em;
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 0.7em;
+            line-height: 1.6;
+        }
+
+        .tags {
+            font-size: 0.95em;
+            color: var(--text-medium);
+            margin-bottom: 2em;
+            text-align: center; /* Center the tags */
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--primary-color);
             color: #ffffff;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0 0 5px 0;
-            font-size: 24px;
-            font-weight: 500;
-            line-height: 1.2;
-        }
-        .header p {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 300;
-            line-height: 1.4;
-            opacity: 0.9;
+            border-radius: 5px;
+            padding: 4px 10px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Code Container - Styled like a Terminal/Editor Window */
-        .code-container {
-            background-color: #1e1e1e; /* Dark background for the code block */
-            margin: 20px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            overflow: hidden;
+        .post-body {
+            margin-top: 2.5em;
         }
 
-        .window-buttons {
-            background-color: #333333; /* Slightly lighter bar for buttons */
-            padding: 8px 12px;
-            display: block; /* Make it a block to contain floats */
-            text-align: left; /* Align buttons to the left */
-        }
-        .window-buttons::after { /* Clearfix for floated spans */
-            content: "";
-            clear: both;
-            display: table;
-        }
-        .window-button {
-            display: inline-block; /* Changed from float for better control in some clients */
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 6px;
-            vertical-align: middle;
-        }
-        .button-red { background-color: #ff5f57; }
-        .button-yellow { background-color: #ffbd2e; }
-        .button-green { background-color: #28c940; }
-
-        .code-block {
-            font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #d4d4d4; /* Light text color for dark background */
-            padding: 15px 20px;
-            margin: 0;
-            overflow-x: auto; /* Allows horizontal scrolling for long code lines */
-            white-space: pre-wrap; /* Preserves whitespace and wraps lines */
-            word-wrap: break-word; /* Breaks long words to prevent overflow */
-            background-color: #1e1e1e; /* Ensure pre has the same dark background */
-        }
-
-        /* Content Area */
-        .content {
-            padding: 20px;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333333;
-        }
-        .content p {
-            margin: 0 0 15px 0;
-        }
-        .content p:last-child { /* Remove bottom margin from last paragraph if it's the last child of .content */
-            margin-bottom: 0;
-        }
-        .content a {
-            color: #3498db; /* A modern blue for links */
-            text-decoration: underline;
-        }
-
-        /* Styling for lists within the content area */
-        .content ul,
-        .content ol {
-            padding-left: 25px; /* Indentation for lists */
-            margin-top: 0; /* Remove default top margin */
-            margin-bottom: 15px; /* Space after the entire list */
-        }
-
-        .content li {
-            margin-bottom: 10px; /* Adds space BELOW each bullet point */
-        }
-
-        /* Remove bottom margin from the last list item within any list in .content */
-        .content ul li:last-child,
-        .content ol li:last-child {
-            margin-bottom: 0;
-        }
-
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #777777;
-            border-top: 1px solid #eeeeee;
-        }
-        .heart {
-            color: #e74c3c; /* Red heart */
-            font-size: 14px; /* Slightly larger heart */
-        }
-        .signature {
-            font-weight: bold;
-            color: #555555;
-        }
-
-        /* --- Mobile First Responsive Styles --- */
-        @media screen and (max-width: 600px) {
-            .container {
-                width: 100% !important;
-                border-radius: 0 !important; /* Full width on small screens */
-                border-left: none !important;
-                border-right: none !important;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
             }
-            .header {
-                padding: 25px 15px;
+            .post-container {
+                padding: 20px;
+                border-radius: 0; /* No border-radius on small screens */
+                box-shadow: none; /* No shadow on small screens */
             }
-            .header h1 {
-                font-size: 25px;
+            h1 {
+                font-size: 2em;
             }
-            .header p {
-                font-size: 15px;
+            h2 {
+                font-size: 1.5em;
             }
-            .code-container {
-                margin: 15px;
+            h3 {
+                font-size: 1.2em;
             }
-            .code-block {
-                font-size: 12px; /* Slightly smaller code font on mobile */
-                padding: 12px 15px;
-            }
-            .content {
-                padding: 15px;
-                font-size: 15px;
-            }
-            .content ul,
-            .content ol {
-                padding-left: 25px; /* Slightly less indentation on mobile */
-                margin-bottom: 15px;
-            }
-            .content li {
-                margin-bottom: 10px; /* Slightly less space between bullets on mobile */
-            }
-            footer {
-                padding: 15px;
-                font-size: 11px;
-            }
-        }
-
-        /* --- Outlook Specific Fixes (if needed, keep minimal) --- */
-        /* Example: Force Outlook to use a specific width.
-        Outlook doesn't always respect max-width on divs.
-        You might wrap your .container in a conditional table:
-        ... your .container div ...
-        */
-
-        /* Ensure text links are not blue in Gmail if you set a different color */
-        a[x-apple-data-detectors] {
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Daily Code Broadcast</h1>
-            <p>Your daily dose of programming wisdom</p>
+    <div class="post-container">
+        <h1>{{post_title}}</h1>
+        <div class="tags">{{post_tags}}</div>
+        <div class="post-body">
+            {{post_body}}
         </div>
-        
-        <div class="code-container">
-            <div class="window-buttons">
-                <span class="window-button button-red"></span>
-                <span class="window-button button-yellow"></span>
-                <span class="window-button button-green"></span>
-            </div>
-            <pre class="code-block">{{header}}</pre>
-        </div>
-        
-        <div class="content">
-            {{content}}
-        </div>
-        
-        <footer>
-            Sent with <span class="heart">♥</span> by <span class="signature">Danny Bronshtein</span>
-        </footer>
     </div>
 </body>
 </html>

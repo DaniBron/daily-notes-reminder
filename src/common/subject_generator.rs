@@ -1,5 +1,5 @@
-use crate::common::topics_generator::Topics;
+use crate::common::topics_generator::BlogPosts;
 
 pub trait SubjectGenerator {
-    fn generate_subject(&self, topics: &Topics) -> Result<String, Box<dyn std::error::Error>>;
+    fn generate_subject(&self, topics: &BlogPosts) -> Result<String, Box<dyn std::error::Error>>;
 }

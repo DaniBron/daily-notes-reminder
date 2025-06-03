@@ -1,14 +1,18 @@
 use rand::Rng;
-use crate::common::topics_generator::Topics;
-use crate::common::topics_generator::BulletNode;
 use std::error::Error;
 use crate::common::subject_generator::SubjectGenerator;
+use crate::common::topics_generator::{BlogPosts, Post}; // Import your structs
 
 pub struct RandomSubjectGenerator {}
 
 impl SubjectGenerator for RandomSubjectGenerator {
-    fn generate_subject(&self, topics: &Topics) -> Result<String, Box<dyn Error>> {
-        Ok(self.generate_html_str(topics))
+    // The trait method's return type should be Result<String, Box<dyn Error>> as HTML is a String
+    fn generate_subject(&self, blog_posts: &BlogPosts) -> Result<String, Box<dyn Error>> {
+        // We'll generate HTML for a single random post
+        match self.generate_html_for_random_post(blog_posts) {
+            Some(html_string) => Ok(html_string),
+            None => Err("No posts available to generate a subject from.".into()),
+        }
     }
 }
 
@@ -17,59 +21,115 @@ impl RandomSubjectGenerator {
         RandomSubjectGenerator {}
     }
 
-    fn get_random_topic<'a>(&'a self, topics: &'a Topics) -> Option<&BulletNode>{
-        if topics.is_empty() {
+    // This function now returns a random `&Post` instead of `&BulletNode`
+    fn get_random_post<'a>(&'a self, blog_posts: &'a BlogPosts) -> Option<&Post> {
+        if blog_posts.post.is_empty() {
             return None;
         }
 
         let mut rng = rand::thread_rng();
-        let random_topic = rng.gen_range(0..topics.root_nodes.len());
-        let topic: &BulletNode = &topics.root_nodes[random_topic]; //topics.iter().collect();
+        let random_index = rng.gen_range(0..blog_posts.post.len());
         
-        Some(topic)
+        // Return a reference to the randomly selected post
+        blog_posts.post.get(random_index)
     }
 
-    fn generate_html_str(&self, topics: &Topics) -> String {
-        let mut email_html: String = include_str!("styles/style.html").to_string();
+    // This function now takes `&BlogPosts` and generates HTML for one random post.
+    // It is no longer `generate_html_str` but `generate_html_for_random_post` for clarity.
+    fn generate_html_for_random_post(&self, blog_posts: &BlogPosts) -> Option<String> {
+        // Load the HTML template
+        let mut email_html_template: String = include_str!("styles/style.html").to_string();
 
-        // Get a random topic
-        if let Some(topic) = self.get_random_topic(&topics) {
-            // Set the header from the topic content
-            email_html = email_html.replace("{{header}}", &topic.content);
+        if let Some(post) = self.get_random_post(blog_posts) {
+            // Replace post title
+            email_html_template = email_html_template.replace("{{post_title}}", &post.title);
 
-            // Generate HTML for children nodes
-            let mut content = String::new();
+            // Replace tags
+            let tags_html = post.tags.iter()
+                .map(|tag| format!("<span class=\"tag\">{}</span>", tag))
+                .collect::<Vec<String>>()
+                .join("");
+            email_html_template = email_html_template.replace("{{post_tags}}", &tags_html);
+
+            // Generate content for the post body
+            let mut post_body_content = String::new();
             
-            // Process level 1 nodes (main bullet points)
-            for child in &topic.children {
-                if child.level == 1 {
-                    content.push_str("<li>");
-                    content.push_str(&child.content);
-                    
-                    // Check for level 2 children (sub-bullets)
-                    let sub_bullets: Vec<&BulletNode> = child.children
-                        .iter()
-                        .filter(|node| node.level == 2)
-                        .collect();
-                    
-                    if !sub_bullets.is_empty() {
-                        content.push_str("<ul>");
-                        for sub_bullet in sub_bullets {
-                            content.push_str(&format!("<li>{}</li>", sub_bullet.content));
+            for section in &post.sections {
+                match section.section_type.as_str() {
+                    "introduction" | "conclusion" => {
+                        if let Some(content) = &section.content {
+                            post_body_content.push_str(&format!("<p>{}</p>", content));
                         }
-                        content.push_str("</ul>");
+                    },
+                    "heading_with_paragraphs" => {
+                        if let Some(heading) = &section.heading {
+                            post_body_content.push_str(&format!("<h2>{}</h2>", heading));
+                        }
+                        if let Some(paragraphs) = &section.paragraphs {
+                            for p_text in paragraphs {
+                                post_body_content.push_str(&format!("<p>{}</p>", p_text));
+                            }
+                        }
+                    },
+                    "heading_with_paragraphs_and_bullets" => {
+                        if let Some(heading) = &section.heading {
+                            post_body_content.push_str(&format!("<h2>{}</h2>", heading));
+                        }
+                        if let Some(paragraphs) = &section.paragraphs {
+                            for p_text in paragraphs {
+                                post_body_content.push_str(&format!("<p>{}</p>", p_text));
+                            }
+                        }
+                        if let Some(bullets) = &section.bullets {
+                            post_body_content.push_str("<ul>");
+                            for bullet_text in bullets {
+                                post_body_content.push_str(&format!("<li>{}</li>", bullet_text));
+                            }
+                            post_body_content.push_str("</ul>");
+                        }
+                        if let Some(paragraphs_after_bullets) = &section.paragraphs_after_bullets {
+                            for p_text in paragraphs_after_bullets {
+                                post_body_content.push_str(&format!("<p>{}</p>", p_text));
+                            }
+                        }
+                    },
+                    "heading_with_paragraphs_and_lists" => {
+                        // This handles sections like "Relational Databases (SQL)" with "Key Features", "Use Cases", "Examples"
+                        if let Some(heading) = &section.heading {
+                            post_body_content.push_str(&format!("<h2>{}</h2>", heading));
+                        }
+                        if let Some(paragraphs) = &section.paragraphs {
+                            for p_text in paragraphs {
+                                post_body_content.push_str(&format!("<p>{}</p>", p_text));
+                            }
+                        }
+                        if let Some(sub_sections) = &section.sub_sections {
+                            for sub_sec in sub_sections {
+                                // Sub-section title (e.g., "Key Features") as h3 or strong
+                                post_body_content.push_str(&format!("<h3>{}</h3>", sub_sec.title));
+                                post_body_content.push_str("<ul>");
+                                for item in &sub_sec.items {
+                                    post_body_content.push_str(&format!("<li>{}</li>", item));
+                                }
+                                post_body_content.push_str("</ul>");
+                            }
+                        }
+                    },
+                    // Add more cases for other section types if they appear in your TOML
+                    _ => {
+                        // Handle unknown section types, or log a warning
+                        eprintln!("WARNING: Unknown section type encountered: {}", section.section_type);
                     }
-                    
-                    content.push_str("</li>\n");
                 }
             }
 
-            email_html = email_html.replace("{{content}}", &content);
-        } else {
-            email_html = email_html.replace("{{header}}", "No Topics Available");
-            email_html = email_html.replace("{{content}}", "<p>No content to display.</p>");
-        }
+            // Replace the main content placeholder
+            email_html_template = email_html_template.replace("{{post_body}}", &post_body_content);
+            Some(email_html_template)
 
-        email_html
+        } else {
+            // No posts found, return None
+            None
+        }
     }
 }

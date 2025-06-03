@@ -1,4 +1,4 @@
-//use std::collections::HashMap;
+use serde::Deserialize;
 
 #[derive(Debug)]
 pub struct Topics {
@@ -70,10 +70,51 @@ impl BulletNode {
     }
 }
 
+// --- Main Struct for the Entire TOML File ---
+// This will hold a vector of Post structs because [[post]] indicates an array of posts.
+#[derive(Debug, Deserialize)]
+pub struct BlogPosts {
+    pub post: Vec<Post>,
+}
 
+// --- Post Struct ---
+// Represents a single blog post.
+#[derive(Debug, Deserialize)]
+pub struct Post {
+    pub id: String,
+    pub title: String,
+    pub tags: Vec<String>,
+    // A post contains an array of sections
+    pub sections: Vec<Section>,
+}
+
+// --- Section Struct ---
+// Represents a generic section within a post.
+// The fields are made `Option<T>` because not all section types will have all fields.
+#[derive(Debug, Deserialize)]
+pub struct Section {
+    #[serde(rename = "type")] // Map 'type' from TOML to 'section_type' to avoid Rust keyword clash
+    pub section_type: String,
+    pub content: Option<String>,
+    pub heading: Option<String>,
+    pub paragraphs: Option<Vec<String>>,
+    pub bullets: Option<Vec<String>>,
+    pub paragraphs_after_bullets: Option<Vec<String>>,
+    pub parent_topic: Option<String>,
+    // Nested `sub_sections` for "heading_with_paragraphs_and_lists" type
+    pub sub_sections: Option<Vec<SubSection>>,
+}
+
+// --- SubSection Struct ---
+// Represents a sub-section with a title and a list of items (e.g., Key Features, Use Cases).
+#[derive(Debug, Deserialize)]
+pub struct SubSection {
+    pub title: String,
+    pub items: Vec<String>,
+}
 
 pub trait TopicsGenerator {
-    fn generate_topics(&self, file_path: &str) -> Result<Topics, Box<dyn std::error::Error>>;
+    fn generate_topics(&self, file_path: &str) -> Result<BlogPosts, Box<dyn std::error::Error>>;
 }
 
 
